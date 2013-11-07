@@ -2,15 +2,13 @@ import collections
 import glob
 import os
 import math
-import cProfile
 import re
-import string
 
 #the # of most popular words of each author is intersected together. this intersection is removed from everybody
 MAX_TO_REMOVE = 200
 
 #minimum number of times a word has to be repeated before it's considered
-OCCURENCE_LIMIT = 2
+OCCURENCE_LIMIT = 3
 
 M = 10
 
@@ -47,7 +45,6 @@ class BayeClass:
                     set(x[0] for x in sorted(data.items(), reverse=True, key=lambda x: x[1])[:MAX_TO_REMOVE])
             mostCommon = mostCommon.intersection(
                 set(x[0] for x in sorted(data.items(), reverse=True, key=lambda x: x[1])[:MAX_TO_REMOVE]))
-        print "Removing", len(mostCommon), "words"
 
         for author, data in self.authors.items():
             self.authors[author] = \
@@ -86,7 +83,10 @@ def main():
 
     os.chdir("books")
     fileNames = [files for files in glob.glob("*.txt")]
-    print fileNames
+    print "reading",
+    for name in fileNames:
+        print name,
+    print
 
     bay = BayeClass()
 
