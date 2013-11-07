@@ -20,11 +20,8 @@ SECTIONS = 10
 
 REMOVE = re.compile('[^A-Za-z ]')
 
-
 def Strip(s):
     return REMOVE.sub('', s)
-
-# return "".join(c for c in s.strip() if c.isalpha() or c == " ")
 
 
 class BayeClass:
@@ -45,10 +42,6 @@ class BayeClass:
     def Prepare(self):
         mostCommon = None
         for author, data in self.authors.items():
-            # if mostCommon is None:
-            #     mostCommon = set(x for x in data.items())
-            # mostCommon = mostCommon.intersection(set(x for x in data.items()))
-
             if mostCommon is None:
                 mostCommon = \
                     set(x[0] for x in sorted(data.items(), reverse=True, key=lambda x: x[1])[:MAX_TO_REMOVE])
@@ -59,10 +52,6 @@ class BayeClass:
         for author, data in self.authors.items():
             self.authors[author] = \
                 dict((item for item in data.items() if item[1] > OCCURENCE_LIMIT and item[0] not in mostCommon))
-            #self.authors[author] =
-            # dict((
-            # item for item in sorted(data.items(), reverse=True, key = lambda x: x[1])[WORDS_TO_REMOVE:]
-            # if item[1] > 3))
 
     def Classify(self, words):
     #vocabulary
@@ -74,12 +63,6 @@ class BayeClass:
     #n_k        number of times w_k occurs in Text_j
     #P(w_k|v_j) (n_k+1)/(n+|Vocabulary|)
 
-        # vocabulary = set()
-        # for author, data in self.authors.items():
-        #     vocabulary = vocabulary.union(set(data.keys()))
-
-        #print "Vocabulary length:", len(vocabulary)
-
         bestValue = 0
         best = 0
 
@@ -87,26 +70,13 @@ class BayeClass:
             n = sum(data.values())
             P_vj = math.log1p(1 / float(len(self.authors.keys())))
 
-            # for word, count in data.items():
-            #     n += count
-            # for word in vocabulary:
-            #     P_wk_vj = (data[word]+1)/(len(data.keys())+len(vocabulary))
-
             for word in words:
                 P_vj += math.log1p(float(data.get(word, 0) + 1) / float(n))
 
-            #print "P_vj", author, ":", P_vj
             if P_vj > bestValue:
                 bestValue = P_vj
                 best = author
         return best
-        # for author, data in self.authors.items():
-        #     vocabCount = 0
-        #     wordCount = 0
-        #     vocabulary = set(data.keys())
-        #     for word, wordcount in data.items():
-        #         wordCount += wordcount
-        #         vocabCount += 1
 
 
 def main():
@@ -164,12 +134,6 @@ def main():
     print "Success rate:", "{0:.0f}%" \
         .format(correct_predictions / float(correct_predictions + wrong_predictions) * 100),
     print "\tWorst book: {0:.0f}%".format(worst_book * 100)
-    #print "Book Success:", correct_book, "/", (correct_book+wrong_book)
-
-    #print "Book Success:", correct_book, "/", (correct_book+wrong_book)
-
-    #booksL = [x for x in sorted(book.items(), reverse=True, key=lambda i: i[1])][WORDS_TO_REMOVE:]
-    #has top words removed
 
 
 if __name__ == "__main__":
